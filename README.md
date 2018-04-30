@@ -2,7 +2,13 @@
 
 * Get the data:
 
+`mkdir data`
+
 `gsutil -m rsync -r gs://ctp-playground-ml-datasets/hipchat/data data`
+
+* Install redis (used by Will):
+
+`brew install redis`
 
 * Create environment:
 
@@ -14,4 +20,13 @@
 
 * Set up credentials in secrets.py
 
-* ...
+## Running the chatbot
+
+* Start redis server:
+
+`redis-server`
+
+* Run bot:
+
+`./run_will.py`
+
