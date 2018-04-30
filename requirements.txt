@@ -1,0 +1,16 @@
+numpy
+pandas
+scikit-learn
+tensorflow
+keras
+markovify
+
+will
+
+# Slack
+-r base.txt
+slackclient>=1.0.5<1.1.0
+markdownify==0.4.1
+
+# HipChat
+sleekxmpp==1.3.2
