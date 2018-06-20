@@ -44,18 +44,17 @@
 # By default, the list below includes all the core will plugins and
 # all your project's plugins.
 
-from secrets import SLACK_API_TOKEN
 
 PLUGINS = [
     # Built-ins
-    "will.plugins.admin",
-    "will.plugins.chat_room",
-    "will.plugins.devops",
-    "will.plugins.friendly",
-    "will.plugins.fun",
-    "will.plugins.help",
-    "will.plugins.productivity",
-    "will.plugins.web",
+    # "will.plugins.admin",
+    # "will.plugins.chat_room",
+    # "will.plugins.devops",
+    # "will.plugins.friendly",
+    # "will.plugins.fun",
+    # "will.plugins.help",
+    # "will.plugins.productivity",
+    # "will.plugins.web",
 
     # All plugins in your project.
     "plugins",
@@ -74,7 +73,8 @@ PLUGIN_BLACKLIST = [
 # in a secured session. If a SECRET_KEY is not set, one will be auto-generated,
 # but it may limit Will to reading data from this excecution only, and may not work
 # on virtualized machines, or machines with many or changing MAC addresses
-# SECRET_KEY = ...
+
+from secrets import SECRET_KEY
 
 # ------------------------------------------------------------------------------------
 # Platform and Decision-making
@@ -83,7 +83,7 @@ PLUGIN_BLACKLIST = [
 # Platforms and mediums messages can come in and go out on.
 IO_BACKENDS = [
     "will.backends.io_adapters.slack",
-    # "will.backends.io_adapters.hipchat",
+    "will.backends.io_adapters.hipchat",
     # "will.backends.io_adapters.rocketchat",
     "will.backends.io_adapters.shell",
 ]
@@ -123,7 +123,7 @@ FUZZY_REGEX_ALLOWABLE_ERRORS = 3
 # Slack settings
 # ------------------------------------------------------------------------------------
 SLACK_DEFAULT_CHANNEL = "test"
-# SLACK_API_TOKEN imported from secrets.py
+from secrets import SLACK_API_TOKEN
 
 # ------------------------------------------------------------------------------------
 # Rocket.chat settings
@@ -138,8 +138,12 @@ SLACK_DEFAULT_CHANNEL = "test"
 # ------------------------------------------------------------------------------------
 
 # The list of rooms will should join.  Default is all rooms.
-HIPCHAT_ROOMS = ["Machine Learning Conversation"]
-HIPCHAT_DEFAULT_ROOM = "Machine Learning Conversation"
+
+HIPCHAT_USERNAME = '16427_4342980@chat.hipchat.com'
+HIPCHAT_ROOMS = ['16427_machine_learning_bot@conf.hipchat.com']
+HIPCHAT_DEFAULT_ROOM = '16427_machine_learning_bot@conf.hipchat.com'
+from secrets import HIPCHAT_PASSWORD, HIPCHAT_V2_TOKEN
+
 
 # Disable HipChat SSL checks.  Strongly reccomended this is not set to True.
 # ALLOW_INSECURE_HIPCHAT_SERVER = False
@@ -156,7 +160,6 @@ HIPCHAT_DEFAULT_ROOM = "Machine Learning Conversation"
 # The backend and room Will should talk to if the trigger is a webhook and he isn't told
 # a specific room.  Default is the first of IO_BACKENDS and ROOMS.
 DEFAULT_BACKEND = "will.backends.io_adapters.slack"
-DEFAULT_ROOM = 'test'
 
 # Port to bind the web server to (defaults to $PORT, then 80.)
 # Set > 1024 to run without elevated permission.
