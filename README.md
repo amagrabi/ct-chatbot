@@ -26,6 +26,10 @@
 
 `redis-server`
 
+or
+
+`docker-compose up -d`
+
 * Run bot:
 
 `python run_will.py`
