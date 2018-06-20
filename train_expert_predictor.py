@@ -13,7 +13,7 @@ from sklearn.model_selection import train_test_split
 
 from get_data import get_data
 
-df = get_data()
+df = get_data(max_msgs_per_user=10000)
 
 # Train model to predict user
 userid2name = dict(df.groupby('from.user_id')['from.name'].apply(list))

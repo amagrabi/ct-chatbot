@@ -11,8 +11,17 @@ import re
 FILEPATH_PKL = Path.cwd() / 'data' / 'data.pkl'
 
 
-def get_data(filepath_pkl=FILEPATH_PKL):
-    """Get data as a pandas DataFrame"""
+def get_data(filepath_pkl=FILEPATH_PKL, max_msgs_per_user=None):
+    """Get data as a pandas DataFrame, sorted by date
+
+    Args:
+        filepath_pkl (str): Path to the serialized DataFrame.
+        max_msgs_per_user (int): If set, excess messages are randomly excluded.
+
+    Returns:
+        pd.DataFrame
+
+    """
     df = pd.read_pickle(str(filepath_pkl))
 
     # Drop useless columns
@@ -51,5 +60,18 @@ def get_data(filepath_pkl=FILEPATH_PKL):
     # Deal with multiple and trailing whitespaces, exclude empty messages
     df.message = df.message.apply(lambda x: re.sub(' +',' ', x).strip())
     df = df[~df.message.isin(['', ' '])]
+
+    if max_msgs_per_user:
+        counts = pd.DataFrame(df['from.name'].value_counts())
+        counts.rename(columns={'from.name': 'counts'}, inplace=True)
+        counts['from.name'] = counts.index
+        spammers = counts[counts.counts >= max_msgs_per_user]['from.name'].values
+        df_balanced = df[~df['from.name'].isin(spammers)].copy()
+        for spammer in spammers:
+            df_balanced = df_balanced.append(df[df['from.name'] == spammer].sample(n=max_msgs_per_user))
+        df = df_balanced
+
+    df.sort_values(by='date', inplace=True)
+    df.reset_index(drop=True, inplace=True)
 
     return df
