@@ -4,64 +4,14 @@ Analyze basic stats of hipchat data.
 
 """
 
-import markovify
-import numpy as np
 import operator
 import pandas as pd
-from pathlib import Path
-import re
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.preprocessing import LabelEncoder
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
 
-path_data = Path.cwd() / 'data' / 'data.pkl'
+from get_data import get_data
 
-df = pd.read_pickle(str(path_data))
 
-# Drop useless columns
-df.drop(columns=['data_filename', 'data_filepath', 'file.name', 'file.size', 'file.url'], inplace=True)
-
-# See messages of specific user
-# df.message[df['from.name'] == 'commercetools GmbH · Docker Monitor'].values.tolist()
-
-# Drop messages from bots
-bots = ['GitHub', 'Docker Monitor', 'TeamCity', 'Jenkins', 'JIRA', 'Sphere CI', 'Frontend Bot', 'Travis CI',
-        'Prometheus · AlertManager', 'Sphere Staging', 'Sphere Production', 'Subversion', 'Grafana', 'grafana',
-        'Standup', 'AnomalyDetector', 'PagerDuty', 'UserVoice', 'Confluence', 'MMS',
-        'commercetools GmbH · Docker Monitor', 'Frontend Production', 'Mailroom', 'Stackdriver',
-        'Prometheus alerts · AlertManager', 'LaunchDarkly', 'Mailroom · system@iron.io', 'Ru Bot',
-        'logentries-alerts', 'HipGif', 'commercetools GmbH · GitHub', 'Status IO', 'StatusPage.io', 'ROSHAMBO!',
-        'commercetools GmbH · TeamCity', 'appear.in', 'commercetools GmbH · Travis CI', 'Integrations',
-        'Sphere Frontend', 'commercetools GmbH · Datadog', 'commercetools GmbH · Jenkins', 'System',
-        'commercetools GmbH · Automation', 'commercetools GmbH · Auto Mation', 'commercetools GmbH · akamel',
-        'commercetools GmbH · Subversion', 'commercetools GmbH · Heroku', 'Send from CLI',
-        'AgileZen', 'Log Entries', 'Link', 'Guggy', 'Automation', 'lunchbot',
-        'Prometheus alerts · Your humble Prometheus']
-df = df[~df['from.name'].isin(bots)]
-
-# Drop messages by user ids (more consistent than names)
-bots_user_id = ['api', 'guest']
-df = df[~df['from.user_id'].isin(bots_user_id)]
-
-# Also drop automated messages from non-bots
-automated_message_start = (
-    '@here The ES Listing Validator',
-    'The ES Listing Validator',
-    'Listing validator reports',
-    '@here Listing ID',
-    '@SphereProduction shipit',
-    '@SphereStaging shipit'
-)
-df = df[~df.message.str.startswith(automated_message_start)]
-
-# Deal with multiple and trailing whitespaces, exclude empty messages
-df.message = df.message.apply(lambda x: re.sub(' +',' ', x).strip())
-df = df[~df.message.isin(['', ' '])]
-
-# Optional: Remove urls
-# re.sub('[^ ]+\.[^ ]+', '', text)
+df = get_data()
 
 # Number of total messages
 len(df)
@@ -123,27 +73,3 @@ top_emojis = pd.DataFrame(top_emojis['message'].value_counts())
 top_emojis.reset_index(inplace=True)
 top_emojis.rename(columns={'index': 'message', 'from.name': 'messageCount'}, inplace=True)
 top_emojis.head(n)
-
-# Markov model to generate characteristic messages
-model = markovify.Text(df.message.values)
-for i in range(10):
-    print(model.make_sentence())
-
-# Train model to predict user
-vectorizer = CountVectorizer(
-    min_df=10,
-    max_df=1.0,
-    max_features=None,
-    stop_words='english',
-    lowercase=True,
-    # token_pattern=r'\b\w*[a-zA-Z]{3,}\w*\b',
-)
-vecs = vectorizer.fit_transform(df.message.values)
-user_ids = list(df['from.user_id'].values)
-
-X_train, X_test, y_train, y_test = train_test_split(vecs, user_ids, test_size=0.2)
-clf = MultinomialNB().fit(X_train, y_train)
-y_pred = clf.predict(X_test)
-
-accuracy = accuracy_score(y_test, y_pred)
-
