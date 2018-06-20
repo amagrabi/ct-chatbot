@@ -28,5 +28,5 @@
 
 * Run bot:
 
-`./run_will.py`
+`python run_will.py`
 
