@@ -152,7 +152,7 @@ data:
 
     HIPCHAT_USERNAME = '{{ .Values.secrets.HIPCHAT_USERNAME }}'
     HIPCHAT_ROOMS = {{ .Values.config.HIPCHAT_ROOMS }}
-    HIPCHAT_DEFAULT_ROOM = '.Values.config.HIPCHAT_DEFAULT_ROOM'
+    HIPCHAT_DEFAULT_ROOM = '{{ .Values.config.HIPCHAT_DEFAULT_ROOM }}'
 
     from secrets import HIPCHAT_PASSWORD, HIPCHAT_V2_TOKEN
 
