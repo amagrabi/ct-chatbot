@@ -1,0 +1,87 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  # The identifier of this Deployment, unique within a namespace.
+  # https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+  name: {{ template "name" . }}
+  # Labels are custom fields useful for querying and filtering resources.
+  # https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+  labels:
+    app: {{ template "name" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+spec:
+  # How many pods are running. Can be overriden by the HorizontalPodAutoscaler.
+  replicas: {{ .Values.replicaCount }}
+  # Determines the number of old ReplicaSets to be retained for this Deployment.
+  # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#clean-up-policy
+  revisionHistoryLimit: 2
+  # Specifies a label selector for the Pods targeted by this Deployment.
+  # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#selector
+  selector:
+    matchLabels:
+      app: {{ template "name" . }}
+  # Specifies the strategy used to replace old Pods by new ones.
+  # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-update-deployment
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+{{ toYaml .Values.rollingUpdateStrategy | indent 6 }}
+  # Specifies the minimum number of seconds for which a newly created Pod should
+  # be ready without any of its containers crashing, for it to be considered available.
+  # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#min-ready-seconds
+  minReadySeconds: 5
+  # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#pod-template
+  template:
+    metadata:
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '{{ .Values.service.adminPort }}'
+    spec:
+      containers:
+      - name: {{ template "name" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+#        ports:
+#        - name: {{ .Values.service.name }}
+#          containerPort: {{ .Values.service.internalPort }}
+#        - name: admin
+#          containerPort: {{ .Values.service.adminPort }}
+#        env:
+#        # Inject (non sensitive) environment variables from the `Values` config.
+#        {{- range $key, $val := .Values.config }}
+#        - name: {{ $key }}
+#          value: {{ $val | quote }}
+#          {{- end}}
+#        - name: K8S_NAMESPACE
+#          value: {{ .Release.Namespace }}
+#        - name: K8S_SECRET_NAME
+#          value: {{ .Release.Name }}-secret
+#        # Inject (sensitive) environment variables from `Values` config, referring
+#        # them from the related Secret object. This is an extra measure of security
+#        # to avoid having credentials displayed in plain text in the template file.
+#        # https://kubernetes.io/docs/concepts/configuration/secret/
+#        {{- $relname := .Release.Name -}}
+#        {{- range $key, $val := .Values.secrets }}
+#        - name: {{ $key }}
+#          valueFrom:
+#            secretKeyRef:
+#              name: {{ $relname }}-secret
+#              key: {{ $key }}
+#          {{- end}}
+#        # A liveness probe determines when to restart a container.
+#        # A readiness probe determines when a container is ready to accept traffic.
+#        # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
+        volumeMounts:
+        - mountPath: /app/config.py
+          name: config
+          subPath: config.py
+        - mountPath: /app/secrets.py
+          name: config
+          subPath: secrets.py
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
