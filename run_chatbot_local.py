@@ -23,7 +23,7 @@ if __name__ == '__main__':
     markov_text_generator.save(save_dir='models')
 
     # Training and saving ExpertPredictor data
-    expert_predictor = ExpertPredictor(data=data_undersampled_recent)
+    expert_predictor = ExpertPredictor(data=data_undersampled_recent, min_df=20, max_df=0.05)
     expert_predictor.save(save_dir='models')
 
     # Loading data and using MarkovTextGenerator
@@ -43,10 +43,27 @@ if __name__ == '__main__':
                                        vectorizer=vectorizer_expert_predictor,
                                        name2userid=name2userid,
                                        userid2name=userid2name)
-    print('Generate experts')
+
+    # Test some examples
+    print('Generate experts for Ops')
+    print(expert_predictor.predict_experts_str('Ops', n=10, replace_at=True))
+    print('')
+    print('Generate experts for Scala')
+    print(expert_predictor.predict_experts_str('scala', n=10, replace_at=True))
+    print('')
+    print('Generate experts for ml')
     print(expert_predictor.predict_experts_str('ml', n=10, replace_at=True))
     print('')
 
-    print('Generate Topics')
+    print('Generate Topics Amadeus')
     print(expert_predictor.predict_topics_str('Amadeus Magrabi', n=5, replace_at=True))
     print('')
+    print('Generate Topics Hajo')
+    print(expert_predictor.predict_topics_str('Hajo Eichler', n=5, replace_at=True))
+    print('')
+    print('Generate Topics Simon')
+    print(expert_predictor.predict_topics_str('Simon White', n=5, replace_at=True))
+    print('')
+
+    # Upload trained models to bucket
+    # gsutil -m cp -r models gs://ctp-playground-ml-datasets/hipchat/models

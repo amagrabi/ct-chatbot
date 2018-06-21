@@ -19,7 +19,7 @@ from get_data import get_data
 class ExpertPredictor:
 
     def __init__(self, data=None, model=None, vectorizer=None, userid2name=None, name2userid=None,
-                 max_msgs_per_user=10000):
+                 max_msgs_per_user=10000, min_df=5, max_df=1.0):
         """Train markov model to generate characteristic messages.
 
         Args:
@@ -30,6 +30,8 @@ class ExpertPredictor:
             name2userid (dict): Maps Hipchat user names to user ids.
             max_msgs_per_user (int): When data is not passed and imported, this number sets a limit on the
                                      maximum messages per user by undersampling.
+            min_df (int): Ignore terms that occur less often.
+            max_df (float): Ignore terms that have a document frequency higher than the given threshold.
 
         """
         self.data = data
@@ -38,6 +40,8 @@ class ExpertPredictor:
         self.userid2name = userid2name
         self.name2userid = name2userid
         self.max_msgs_per_user = max_msgs_per_user
+        self.min_df = min_df
+        self.max_df = max_df
 
         # Get data
         if self.data is None:
@@ -52,8 +56,8 @@ class ExpertPredictor:
 
             # Vectorize data
             self.vectorizer = TfidfVectorizer(
-                min_df=1,
-                max_df=1.0,
+                min_df=min_df,
+                max_df=self.max_df,
                 max_features=None,
                 stop_words='english',
                 lowercase=True,
