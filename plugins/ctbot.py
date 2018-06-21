@@ -40,11 +40,11 @@ class CTBotPlugin(WillPlugin):
     @respond_to(r'^(help)$')
     def show_help(self, message):
         answer = """/code
-    Available commands:
+Available commands:
     "expert <topics>" - Suggests people who are experts in the respective topics (e.g. "expert scala").
     "random" - Generates a random commercetools sentence.
     "decide <options>" - Generates a random commercetools sentence (e.g. "decide coffee tea beer").
-    "topics <full user name>" - Shows the words that are most frequently used by a user (e.g. "topics Amadeus Magrabi").
+    "topics <full user name>" - Shows the most frequent words of a user (e.g. "topics Amadeus Magrabi").
     "show top users" - Shows statistics on the most active users.
     "show top emotes" - Shows statistics on the most popular emotes.
     "show top messages" - Shows statistics on the most used messages.
