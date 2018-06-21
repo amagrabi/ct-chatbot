@@ -6,17 +6,23 @@
 
 `gsutil -m rsync -r gs://ctp-playground-ml-datasets/hipchat/data data`
 
+* Get the models:
+
+`mkdir models`
+
+`gsutil -m rsync -r gs://ctp-playground-ml-datasets/hipchat/models models`
+
 * Install redis (used by Will):
 
 `brew install redis`
 
-* Create environment:
+* Create environment (e.g. with [Anaconda](https://anaconda.org/anaconda/python)):
 
-`conda create -y -n ct-chatbot python==3.6`
+`conda create -n ct-chatbot python==3.6`
 
 `conda activate ct-chatbot`
 
-`pip install --user -r requirements.txt`
+`pip install -r requirements.txt`
 
 * Set up credentials in secrets.py
 

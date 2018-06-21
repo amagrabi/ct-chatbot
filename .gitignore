@@ -1,12 +1,13 @@
-# Chatbot
+# Will framework
 *.py[cod]
 pip-log.txt
 shelf.db
 Procfile
 dump.rdb
-secrets.py
-
-
 .idea
+
+# Sensitive data
+secrets.py
 data
+models
 tmp
