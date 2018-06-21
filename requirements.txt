@@ -7,3 +7,4 @@ scikit-learn
 slackclient
 tensorflow
 will
+nltk
