@@ -50,9 +50,14 @@ spec:
         - mountPath: /app/secrets.py
           name: config
           subPath: secrets.py
+        - mountPath:
+          name: models-bucket
+          mountPath: /app/models
       volumes:
       - name: config
         configMap:
           name: {{ template "fullname" . }}
-        resources:
+      - name: models-bucket
+        path: gs://ctp-playground-ml-datasets/hipchat/models
+      resources:
 {{ toYaml .Values.resources | indent 10 }}
