@@ -1,6 +1,5 @@
 ipython
 keras
-markdownify
 markovify
 numpy
 pandas

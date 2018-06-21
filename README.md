@@ -1,3 +1,9 @@
+# Commercetools Chatbot
+
+<p align="center">
+  <img width="200" src="https://static.businessinsider.com/image/519285ffecad046054000014-750.jpg">
+</p>
+
 ## Setup
 
 * Get the data:
