@@ -82,7 +82,7 @@ from secrets import SECRET_KEY
 
 # Platforms and mediums messages can come in and go out on.
 IO_BACKENDS = [
-    "will.backends.io_adapters.slack",
+    #"will.backends.io_adapters.slack",
     "will.backends.io_adapters.hipchat",
     # "will.backends.io_adapters.rocketchat",
     "will.backends.io_adapters.shell",
@@ -123,7 +123,7 @@ FUZZY_REGEX_ALLOWABLE_ERRORS = 3
 # Slack settings
 # ------------------------------------------------------------------------------------
 SLACK_DEFAULT_CHANNEL = "test"
-from secrets import SLACK_API_TOKEN
+# from secrets import SLACK_API_TOKEN
 
 # ------------------------------------------------------------------------------------
 # Rocket.chat settings
@@ -247,3 +247,5 @@ PUBSUB_BACKEND = "redis"  # "redis", or "zeromq" (beta).
 
 # Internal, used for helpful output when upgrades are installed
 WILL_RELEASE_VERSION = 2.0
+
+REDIS_URL = "redis://192.168.99.100:6379"
