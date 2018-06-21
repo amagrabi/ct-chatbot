@@ -247,5 +247,3 @@ PUBSUB_BACKEND = "redis"  # "redis", or "zeromq" (beta).
 
 # Internal, used for helpful output when upgrades are installed
 WILL_RELEASE_VERSION = 2.0
-
-REDIS_URL = "redis://192.168.99.100:6379"
