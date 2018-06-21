@@ -8,18 +8,19 @@ import pandas as pd
 from pathlib import Path
 import re
 
-FILEPATH_PKL = Path.cwd() / 'data' / 'data.pkl'
+filepath_pkl = Path.cwd() / 'data' / 'data.pkl'
 
 
-def get_data(filepath_pkl=FILEPATH_PKL, max_msgs_per_user=None):
+def get_data(filepath_pkl=filepath_pkl, max_msgs_per_user=None, undersampling_method='recent'):
     """Get data as a pandas DataFrame, sorted by date
 
     Args:
         filepath_pkl (str): Path to the serialized DataFrame.
         max_msgs_per_user (int): If set, excess messages are randomly excluded.
+        undersampling_method (str): Undersampling method that is applied when max_msgs_per_user is set [recent, random].
 
     Returns:
-        pd.DataFrame
+        pd.DataFrame: HipChat data.
 
     """
     df = pd.read_pickle(str(filepath_pkl))
@@ -68,7 +69,14 @@ def get_data(filepath_pkl=FILEPATH_PKL, max_msgs_per_user=None):
         spammers = counts[counts.counts >= max_msgs_per_user]['from.name'].values
         df_balanced = df[~df['from.name'].isin(spammers)].copy()
         for spammer in spammers:
-            df_balanced = df_balanced.append(df[df['from.name'] == spammer].sample(n=max_msgs_per_user))
+            if undersampling_method == 'random':
+                df_balanced = df_balanced.append(df[df['from.name'] == spammer].sample(n=max_msgs_per_user))
+            elif undersampling_method == 'recent':
+                df_balanced = df_balanced.append(df[df['from.name'] == spammer]
+                                                 .sort_values(by='date')
+                                                 .iloc[-max_msgs_per_user:])
+            else:
+                raise Exception(f'Undersampling method "{undersampling_method}" is undefined.')
         df = df_balanced
 
     df.sort_values(by='date', inplace=True)

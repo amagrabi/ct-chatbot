@@ -6,7 +6,7 @@ Analyze basic stats of hipchat data.
 
 import operator
 import pandas as pd
-from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 
 from get_data import get_data
 
@@ -57,7 +57,7 @@ for room in top_rooms.room.values[:n]:
 
 # Most common words
 n = 20
-vectorizer = CountVectorizer(stop_words='english')
+vectorizer = TfidfVectorizer(stop_words='english')
 messages = vectorizer.fit_transform(df.message.values)
 vocab = vectorizer.vocabulary_
 vocab_sorted = sorted(vocab.items(), reverse=True, key=operator.itemgetter(1))
@@ -66,7 +66,7 @@ top_words.reset_index(inplace=True)
 top_words.rename(columns={'index': 'message', 'from.name': 'messageCount'}, inplace=True)
 top_words.head(n)
 
-# Most common emoji
+# Most common emote
 n = 20
 top_emojis = df[df.message.str.match(r'^\(\w+\)$')]
 top_emojis = pd.DataFrame(top_emojis['message'].value_counts())
