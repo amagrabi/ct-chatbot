@@ -139,11 +139,11 @@ from secrets import SLACK_API_TOKEN
 
 # The list of rooms will should join.  Default is all rooms.
 
-HIPCHAT_USERNAME = '16427_4342980@chat.hipchat.com'
-HIPCHAT_ROOMS = ['16427_machine_learning_bot@conf.hipchat.com']
-HIPCHAT_DEFAULT_ROOM = '16427_machine_learning_bot@conf.hipchat.com'
-from secrets import HIPCHAT_PASSWORD, HIPCHAT_V2_TOKEN
+HIPCHAT_USERNAME = '16427_202370@chat.hipchat.com'
+HIPCHAT_ROOMS = ['Genius Bot']
+HIPCHAT_DEFAULT_ROOM = 'Genius Bot'
 
+from secrets import HIPCHAT_PASSWORD, HIPCHAT_V2_TOKEN
 
 # Disable HipChat SSL checks.  Strongly reccomended this is not set to True.
 # ALLOW_INSECURE_HIPCHAT_SERVER = False
