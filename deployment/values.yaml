@@ -1,0 +1,4 @@
+config:
+  REDIS_URL: redis://ct-chatbot-redis-master:6379
+  HIPCHAT_ROOMS: '["Genius Bot"]'
+  HIPCHAT_DEFAULT_ROOM: 'Genius Bot'
