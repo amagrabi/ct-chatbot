@@ -38,44 +38,11 @@ spec:
       labels:
         app: {{ template "name" . }}
         release: {{ .Release.Name }}
-      annotations:
-        prometheus.io/scrape: 'true'
-        prometheus.io/port: '{{ .Values.service.adminPort }}'
     spec:
       containers:
       - name: {{ template "name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
-#        ports:
-#        - name: {{ .Values.service.name }}
-#          containerPort: {{ .Values.service.internalPort }}
-#        - name: admin
-#          containerPort: {{ .Values.service.adminPort }}
-#        env:
-#        # Inject (non sensitive) environment variables from the `Values` config.
-#        {{- range $key, $val := .Values.config }}
-#        - name: {{ $key }}
-#          value: {{ $val | quote }}
-#          {{- end}}
-#        - name: K8S_NAMESPACE
-#          value: {{ .Release.Namespace }}
-#        - name: K8S_SECRET_NAME
-#          value: {{ .Release.Name }}-secret
-#        # Inject (sensitive) environment variables from `Values` config, referring
-#        # them from the related Secret object. This is an extra measure of security
-#        # to avoid having credentials displayed in plain text in the template file.
-#        # https://kubernetes.io/docs/concepts/configuration/secret/
-#        {{- $relname := .Release.Name -}}
-#        {{- range $key, $val := .Values.secrets }}
-#        - name: {{ $key }}
-#          valueFrom:
-#            secretKeyRef:
-#              name: {{ $relname }}-secret
-#              key: {{ $key }}
-#          {{- end}}
-#        # A liveness probe determines when to restart a container.
-#        # A readiness probe determines when a container is ready to accept traffic.
-#        # https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
         volumeMounts:
         - mountPath: /app/config.py
           name: config
@@ -83,5 +50,9 @@ spec:
         - mountPath: /app/secrets.py
           name: config
           subPath: secrets.py
+      volumes:
+      - name: config
+        configMap:
+          name: {{ template "fullname" . }}
         resources:
 {{ toYaml .Values.resources | indent 10 }}

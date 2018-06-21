@@ -260,8 +260,10 @@ data:
     WILL_RELEASE_VERSION = 2.0
 
     REDIS_URL = "{{ .Values.config.REDIS_URL }}"
-  secrets.py |-
+    #comment
+  secrets.py: |-
     SECRET_KEY = "{{ .Values.secrets.SECRET_KEY }}"
     SLACK_API_TOKEN = ""
     HIPCHAT_PASSWORD = '{{ .Values.secrets.HIPCHAT_PASSWORD }}'
     HIPCHAT_V2_TOKEN = '{{ .Values.secrets.HIPCHAT_V2_TOKEN }}'
+    #comment

@@ -8,6 +8,7 @@ dump.rdb
 
 # Sensitive data
 secrets.py
+secrets.yaml
 data
 models
 tmp
