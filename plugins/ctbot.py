@@ -37,33 +37,18 @@ expert_predictor = ExpertPredictor(data=data_dummy,
 
 class CTBotPlugin(WillPlugin):
 
-    @respond_to(r'expert (?P<topic>.*)')
-    def find_experts(self, message, topic):
-        answer = expert_predictor.predict_experts_str(topic=topic, n=3, replace_at=True)
-        self.reply(answer, color='gray')
-
-    @respond_to(r'topics (?P<name>.*)')
-    def find_topics(self, message, name):
-        answer = expert_predictor.predict_topics_str(name, n=5, replace_at=True)
-        self.reply(answer, color='gray')
-
-    @respond_to(r'^(random)$')
-    def generate_markov_text(self, message):
-        answer = markov_text_generator.generate_texts_str(n=1, replace_at=True)
-        self.reply(answer, color='gray')
-
-    @respond_to(r'^(help|commands|cmd)$')
+    @respond_to(r'^(help)$')
     def show_help(self, message):
         answer = """/code
-Available commands:
-"expert <topics>" - Suggests people who are experts in the respective topics (e.g. "expert ).
-"random" - Generates a random commercetools sentence.
-"decide <options>" - Generates a random commercetools sentence.
-"topics <full user name>" - Shows the words that are most frequently used by a user.
-"show top users" - Shows statistics on the most active users.
-"show top emotes" - Shows statistics on the most popular emotes.
-"show top messages" - Shows statistics on the most used messages.
-        """
+    Available commands:
+    "expert <topics>" - Suggests people who are experts in the respective topics (e.g. "expert scala").
+    "random" - Generates a random commercetools sentence.
+    "decide <options>" - Generates a random commercetools sentence (e.g. "decide coffee tea beer").
+    "topics <full user name>" - Shows the words that are most frequently used by a user (e.g. "topics Amadeus Magrabi").
+    "show top users" - Shows statistics on the most active users.
+    "show top emotes" - Shows statistics on the most popular emotes.
+    "show top messages" - Shows statistics on the most used messages.
+            """
         self.reply(answer, color='gray')
 
     @respond_to(r'^(show top messages)$')
@@ -117,7 +102,22 @@ Available commands:
         """
         self.reply(answer, color='gray')
 
-    @respond_to(r'decide (?P<options>.*)')
+    @respond_to(r'^(expert) (?P<topic>.*)')
+    def find_experts(self, message, topic):
+        answer = expert_predictor.predict_experts_str(topic=topic, n=3, replace_at=True)
+        self.reply(answer, color='gray')
+
+    @respond_to(r'^(topics) (?P<name>.*)')
+    def find_topics(self, message, name):
+        answer = expert_predictor.predict_topics_str(name, n=5, replace_at=True)
+        self.reply(answer, color='gray')
+
+    @respond_to(r'^(random)$')
+    def generate_markov_text(self, message):
+        answer = markov_text_generator.generate_texts_str(n=1, replace_at=True)
+        self.reply(answer, color='gray')
+
+    @respond_to(r'^(decide) (?P<options>.*)')
     def decide(self, message, options):
         options = str(options)
         options = options.split(' ')
