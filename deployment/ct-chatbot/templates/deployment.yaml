@@ -55,4 +55,11 @@ spec:
         configMap:
           name: {{ template "fullname" . }}
       resources:
+          requests:
+            memory: "2048Mi"
+            cpu: "2"
+          limits:
+            memory: "2048Mi"
+            cpu: "2"
+      resources:
 {{ toYaml .Values.resources | indent 10 }}
