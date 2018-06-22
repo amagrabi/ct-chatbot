@@ -88,17 +88,17 @@ Available commands:
     @respond_to(r'^(show top emotes)$')
     def show_top_emotes(self, message):
         answer = """/code
-                      user  messageCount
-1             Hajo Eichler         59491
-2              Sven Müller         36852
-3              Simon White         26111
-4               Yann Simon         25709
-5           Konrad Fischer         23595
-6          Nicola Molinari         22996
-7   Anas Ait Said Oubrahim         18592
-8           Arnaud Gourlay         16329
-9     Christoph Neijenhuis         12999
-10         Martin Möllmann         12223
+             message  messageCount
+1         (thumbsup)          4140
+2     (allthethings)           505
+3         (awthanks)           343
+4         (sadpanda)           286
+5          (awesome)           185
+6              (yey)           130
+7         (facepalm)           118
+8        (poolparty)           114
+9        (tableflip)            90
+10      (partyparrot)           89
         """
         self.reply(answer, color='gray')
 
