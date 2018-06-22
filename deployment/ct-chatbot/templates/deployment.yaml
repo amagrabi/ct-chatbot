@@ -52,10 +52,10 @@ spec:
           subPath: secrets.py
         resources:
             requests:
-              memory: "2048Mi"
+              memory: "2560Mi"
               cpu: "2"
             limits:
-              memory: "2048Mi"
+              memory: "2560Mi"
               cpu: "2"
       volumes:
       - name: config
