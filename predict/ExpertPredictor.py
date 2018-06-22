@@ -51,6 +51,8 @@ class ExpertPredictor:
         if self.name2userid is None:
             self.name2userid = dict(self.data.groupby('from.name')['from.user_id'].apply(max))
 
+        self.baserate = 1/len(self.name2userid)
+
         # Train model
         if self.model is None:
 
@@ -74,12 +76,13 @@ class ExpertPredictor:
             y_pred = self.model.predict(X_test)
             self._accuracy = accuracy_score(y_test, y_pred)
 
-    def predict_experts(self, topic, n=3):
+    def predict_experts(self, topic, n=5, threshold=0.0):
         """Predicts n experts for a specific topic.
 
         Args:
             topic (str): A topic or a sentence for which experts should be found.
             n (int): Number of experts that should be found.
+            threshold (float): Minimum probability score to count as an expert.
 
         Returns:
             list: HipChat names of experts.
@@ -90,23 +93,27 @@ class ExpertPredictor:
         results = sorted(zip(self.model.classes_, probs[0]), key=lambda x: x[1])[-n:]
         output = []
         for result in results:
-            output.append((self.userid2name.get(result[0])[0], round(result[1], 3), result[0]))
+            if result[1] >= threshold:
+                output.append((self.userid2name.get(result[0])[0], round(result[1], 3), result[0]))
         output.reverse()
         return output
 
-    def predict_experts_str(self, topic, n=3, replace_at=True):
+    def predict_experts_str(self, topic, n=3, replace_at=True, threshold=0.0):
         """Predicts n experts for a specific topic and output a string.
 
         Args:
             topic (str): A topic or a sentence for which experts should be found.
             n (int): Number of experts that should be found.
             replace_at (bool): Replaces the at symbol to not accidentally ping people.
+            threshold (float): Minimum probability score to count as an expert.
 
         Returns:
             str: HipChat names of experts.
 
         """
-        results = self.predict_experts(topic=topic, n=n)
+        results = self.predict_experts(topic=topic, n=n, threshold=threshold)
+        if not results:
+            return 'Sorry, I could not find any experts for that!'
         output = ''
         for i, result in enumerate(results):
             output += f'{i+1}. {result[0]} \n'
