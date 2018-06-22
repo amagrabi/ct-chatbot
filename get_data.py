@@ -56,7 +56,7 @@ def get_data(filepath_pkl=filepath_pkl, max_msgs_per_user=None, undersampling_me
                'Abimbola Idowu', 'Jan Juna', 'Jennifer Wong', 'Antje Lingstädt', 'Lam Tran', 'Daniel Martínez',
                'Selwyn Versteeg', 'Semen Shendyapin', 'Yaron Lambers', 'Houssein Ben Amor', 'Dali Zheng',
                'Daniel Martinez', 'Andrii Kovalenko', 'Stela Leon', 'Szilvia Szegedi', 'Andrew Kamel',
-               'Florian Dietrich', 'Nima Goodarzi', 'Josh Bones']
+               'Florian Dietrich', 'Nima Goodarzi', 'Josh Bones', 'Vicki Kormesch', 'Adrian Makohon']
     df = df[~df['from.name'].isin(expired)]
 
     # Drop messages by user ids (more consistent than names)

@@ -50,7 +50,7 @@ if __name__ == '__main__':
     test_words = ['ops', 'scala', 'ml', 'machine learning', 'smoking', 'party', 'bike', 'running', 'beer',
                   'drunk', 'blog posts', 'jvm', 'graphql', 'Döner', 'cooking', 'ElasticSearch', 'Support',
                   'merchant center', 'kicker', 'ping pong', 'German', 'food', 'Russian', 'American',
-                  'US']
+                  'prosecco']
     for test_word in test_words:
         print(f'Generate experts for {test_word}:')
         print(expert_predictor.predict_experts_str(test_word, n=n, replace_at=True, threshold=threshold))
