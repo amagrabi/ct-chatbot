@@ -12,3 +12,15 @@ secrets.yaml
 data
 models
 tmp
+
+
+# Keras bot weights and data
+/keras_bot/glove
+/keras_bot/answers
+/keras_bot/context
+/keras_bot/my_model_weights.h5
+/keras_bot/my_model_weights20.h5
+/keras_bot/my_model_weights_discriminator.h5
+/keras_bot/Padded_answers
+/keras_bot/Padded_context
+/keras_bot/vocabulary_movie

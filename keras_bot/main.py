@@ -41,11 +41,11 @@ from keras.models import Sequential
 from keras.layers import Activation, Dense, concatenate
 from keras.callbacks import EarlyStopping
 from keras.preprocessing import sequence
-np.random.seed(1234)  # for reproducibility
 # import cPickle
 import _pickle as cPickle #workaround for python3
 
 np.random.seed(1234)  # for reproducibility
+
 
 def get_hipchat_room_data_file(room='Berlin'):
     """Get all messages from a hipchat room to txt file."""
@@ -64,16 +64,20 @@ def split_qa(textfile='data/messages'):
     """Splits a file with text messages from conversations to context and answers text files"""
 
     text = open(textfile, 'r')
-    q = open('context', 'w')
-    a = open('answers', 'w')
+    q = open('./keras_bot/context', 'w')
+    a = open('./keras_bot/answers', 'w')
     pre_pre_previous_raw = ''
     pre_previous_raw = ''
     previous_raw = ''
     person = ' '
     previous_person = ' '
 
-    l1 = ['won’t','won\'t','wouldn’t','wouldn\'t','’m', '’re', '’ve', '’ll', '’s','’d', 'n’t', '\'m', '\'re', '\'ve', '\'ll', '\'s', '\'d', 'can\'t', 'n\'t', 'B: ', 'A: ', ',', ';', '.', '?', '!', ':', '. ?', ',   .', '. ,', 'EOS', 'BOS', 'eos', 'bos']
-    l2 = ['will not','will not','would not','would not',' am', ' are', ' have', ' will', ' is', ' had', ' not', ' am', ' are', ' have', ' will', ' is', ' had', 'can not', ' not', '', '', ' ,', ' ;', ' .', ' ?', ' !', ' :', '? ', '.', ',', '', '', '', '']
+    l1 = ['won’t','won\'t','wouldn’t','wouldn\'t','’m', '’re', '’ve', '’ll', '’s','’d', 'n’t', '\'m', '\'re', '\'ve',
+          '\'ll', '\'s', '\'d', 'can\'t', 'n\'t', 'B: ', 'A: ', ',', ';', '.', '?', '!', ':', '. ?', ',   .', '. ,',
+          'EOS', 'BOS', 'eos', 'bos']
+    l2 = ['will not','will not','would not','would not',' am', ' are', ' have', ' will', ' is', ' had', ' not', ' am',
+          ' are', ' have', ' will', ' is', ' had', 'can not', ' not', '', '', ' ,', ' ;', ' .', ' ?', ' !', ' :', '? ',
+          '.', ',', '', '', '', '']
     l3 = ['-', '_', ' *', ' /', '* ', '/ ', '\"', ' \\"', '\\ ', '--', '...', '. . .']
 
     for i, raw_word in enumerate(text):
@@ -90,10 +94,10 @@ def split_qa(textfile='data/messages'):
         previous_person = person
 
         for j, term in enumerate(l1):
-            raw_word = raw_word.replace(term,l2[j])
+            raw_word = raw_word.replace(term, l2[j])
 
         for term in l3:
-            raw_word = raw_word.replace(term,' ')
+            raw_word = raw_word.replace(term, ' ')
 
         raw_word = raw_word.lower()
 
@@ -115,11 +119,11 @@ def get_train_data():
     """Stores the padded sentences into the files 'Padded_context' and 'Padded_answers'"""
 
     np.random.seed(1234)  # for reproducibility
-    questions_file = 'context'
-    answers_file = 'answers'
-    vocabulary_file = 'vocabulary_movie'
-    padded_questions_file = 'Padded_context'
-    padded_answers_file = 'Padded_answers'
+    questions_file = './keras_bot/context'
+    answers_file = './keras_bot/answers'
+    vocabulary_file = './keras_bot/vocabulary_movie'
+    padded_questions_file = './keras_bot/Padded_context'
+    padded_answers_file = './keras_bot/Padded_answers'
     unknown_token = 'something'
 
     vocabulary_size = 7000
@@ -149,7 +153,7 @@ def get_train_data():
     word_freq = nltk.FreqDist(itertools.chain(tokenized_text))
     print ("Found %d unique words tokens." % len(word_freq.items()))
 
-    # I think the correct is this:
+    # I think the correct is this: ###!!!! yes or no....
     # Getting the most common words and build index_to_word and word_to_index vectors:
     vocab = word_freq.most_common(vocabulary_size-1)
     # Saving vocabulary:
@@ -157,7 +161,7 @@ def get_train_data():
         pickle.dump(vocab, v)
 
     # It was originally loading the existing file
-    # vocab = pickle.load(open(vocabulary_file, 'rb'))  # this was originally..
+    vocab = pickle.load(open(vocabulary_file, 'rb'))  # this was originally..
 
     index_to_word = [x[0] for x in vocab]
     index_to_word.append(unknown_token)
@@ -202,19 +206,18 @@ def train_bot():
     dropout = .25
     n_test = 100
 
-    vocabulary_file = 'vocabulary_movie'
-    questions_file = 'Padded_context'
-    answers_file = 'Padded_answers'
-    weights_file = 'my_model_weights20.h5'
-    GLOVE_DIR = './glove/'
+    vocabulary_file = './keras_bot/vocabulary_movie'
+    questions_file = './keras_bot/Padded_context'
+    answers_file = './keras_bot/Padded_answers'
+    weights_file = './keras_bot/my_model_weights20.h5'
+    GLOVE_DIR = './keras_bot/glove/'
 
     early_stopping = EarlyStopping(monitor='val_loss', patience=Patience)
 
-    def print_result(input):
+    def print_result(input, index_BOS=2):
 
         ans_partial = np.zeros((1, maxlen_input))
-        ans_partial[
-            0, -1] = 2  # the index of the symbol BOS (begin of sentence) #TODO that might have changed as well..
+        ans_partial[0, -1] = index_BOS  # the index of the symbol BOS (begin of sentence) #TODO that might have changed as well..
         for k in range(maxlen_input - 1):
             ye = model.predict([input, ans_partial])
             mp = np.argmax(ye)
@@ -246,6 +249,10 @@ def train_bot():
 
     # Loading our vocabulary:
     vocabulary = cPickle.load(open(vocabulary_file, 'rb'))
+
+    # Find indexes of BOS and EOS
+    index_EOS = [vocabulary.index(item) for item in vocabulary if item[0] == 'EOS'][0]
+    index_BOS = [vocabulary.index(item) for item in vocabulary if item[0] == 'BOS'][0]
 
     # Using the Glove embedding:
     i = 0
@@ -326,7 +333,7 @@ def train_bot():
             s = q2.shape
             count = 0
             for i, sent in enumerate(a[n:n + step]):
-                l = np.where(sent == 1)  # the position od the symbol EOS / changed to 1 for current dictionary
+                l = np.where(sent == 3)  # the position od the symbol EOS / changed to 1 for current dictionary
                 limit = l[0][0]
                 count += limit + 1
 
@@ -340,7 +347,7 @@ def train_bot():
                 ans_partial = np.zeros((1, maxlen_input))
 
                 # Loop over the positions of the current target output (the current output sequence):
-                l = np.where(sent == 1)  # the position of the symbol EOS / same here
+                l = np.where(sent == 3)  # the position of the symbol EOS / same here
                 limit = l[0][0]
 
                 for k in range(1, limit + 1):
