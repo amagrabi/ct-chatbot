@@ -50,16 +50,15 @@ spec:
         - mountPath: /app/secrets.py
           name: config
           subPath: secrets.py
+        resources:
+            requests:
+              memory: "2048Mi"
+              cpu: "2"
+            limits:
+              memory: "2048Mi"
+              cpu: "2"
       volumes:
       - name: config
         configMap:
           name: {{ template "fullname" . }}
-      resources:
-          requests:
-            memory: "2048Mi"
-            cpu: "2"
-          limits:
-            memory: "2048Mi"
-            cpu: "2"
-      resources:
 {{ toYaml .Values.resources | indent 10 }}
