@@ -112,4 +112,4 @@ if __name__ == '__main__':
     print('')
 
     # Upload trained models to bucket
-    # gsutil -m cp -r models gs://ctp-playground-ml-datasets/hipchat/models
+    # gsutil -m cp -r models gs://ctp-playground-ml-datasets/hipchat
