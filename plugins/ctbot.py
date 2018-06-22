@@ -105,7 +105,7 @@ Available commands:
     @respond_to(r'^(expert) (?P<topic>.*)')
     def find_experts(self, message, topic):
         answer = expert_predictor.predict_experts_str(topic=topic, n=5, replace_at=True,
-                                                      threshold=0.)
+                                                      threshold=0.01)
         self.reply(answer, color='gray')
 
     @respond_to(r'^(topics) (?P<name>.*)')
