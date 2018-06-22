@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     data_full = get_data()
     data_resampled = get_data(max_msgs_per_user=5000, undersampling_method='recent',
-                                             boost_users_in_range=(1, 1500), boost_factor=1.5)
+                                             boost_users_in_range=(1, 1500), boost_factor=2)
     data_dummy = pd.DataFrame()
 
     # Training and saving MarkovTextGenerator data
@@ -44,72 +44,25 @@ if __name__ == '__main__':
                                        name2userid=name2userid,
                                        userid2name=userid2name)
 
-    # Test some examples
-    print('Generate experts for Ops')
-    print(expert_predictor.predict_experts_str('Ops', n=10, replace_at=True))
-    print('')
-    print('Generate experts for Scala')
-    print(expert_predictor.predict_experts_str('scala', n=10, replace_at=True))
-    print('')
-    print('Generate experts for ml')
-    print(expert_predictor.predict_experts_str('ml', n=10, replace_at=True))
-    print('')
-    print('Generate experts for Machine Learning')
-    print(expert_predictor.predict_experts_str('Machine Learning', n=10, replace_at=True))
-    print('')
-    print('Generate experts for smoking')
-    print(expert_predictor.predict_experts_str('smoking', n=10, replace_at=True))
-    print('')
-    print('Generate experts for party')
-    print(expert_predictor.predict_experts_str('party', n=10, replace_at=True))
-    print('')
-    print('Generate experts for beer')
-    print(expert_predictor.predict_experts_str('party', n=10, replace_at=True))
-    print('')
-    print('Generate experts for drunk')
-    print(expert_predictor.predict_experts_str('drunk', n=10, replace_at=True))
-    print('')
-    print('Generate experts for blog posts')
-    print(expert_predictor.predict_experts_str('blog posts', n=10, replace_at=True))
-    print('')
-    print('Generate experts for jvm')
-    print(expert_predictor.predict_experts_str('jvm', n=10, replace_at=True))
-    print('')
-    print('Generate experts for graphql')
-    print(expert_predictor.predict_experts_str('graphql', n=10, replace_at=True))
-    print('')
-    print('Generate experts for Döner')
-    print(expert_predictor.predict_experts_str('Döner', n=10, replace_at=True))
-    print('')
-    print('Generate experts for cooking')
-    print(expert_predictor.predict_experts_str('cooking', n=10, replace_at=True))
-    print('')
-    print('Generate experts for elasticsearch')
-    print(expert_predictor.predict_experts_str('elasticsearch', n=10, replace_at=True))
-    print('')
-    print('Generate experts for support')
-    print(expert_predictor.predict_experts_str('support', n=10, replace_at=True))
-    print('')
-    print('Generate experts for merchant center')
-    print(expert_predictor.predict_experts_str('merchant center', n=10, replace_at=True))
-    print('')
-    print('Generate experts for kicker')
-    print(expert_predictor.predict_experts_str('kicker', n=10, replace_at=True))
-    print('')
-    print('Generate experts for table tennis')
-    print(expert_predictor.predict_experts_str('table tennis', n=10, replace_at=True))
-    print('')
+    # Test some example experts
+    threshold = 0.01
+    n = 5
+    test_words = ['ops', 'scala', 'ml', 'machine learning', 'smoking', 'party', 'bike', 'running', 'beer',
+                  'drunk', 'blog posts', 'jvm', 'graphql', 'Döner', 'cooking', 'ElasticSearch', 'Support',
+                  'merchant center', 'kicker', 'ping pong', 'German', 'food', 'Russian', 'American',
+                  'US']
+    for test_word in test_words:
+        print(f'Generate experts for {test_word}:')
+        print(expert_predictor.predict_experts_str(test_word, n=n, replace_at=True, threshold=threshold))
+        print('')
 
-
-    print('Generate Topics Amadeus')
-    print(expert_predictor.predict_topics_str('Amadeus Magrabi', n=5, replace_at=True))
-    print('')
-    print('Generate Topics Hajo')
-    print(expert_predictor.predict_topics_str('Hajo Eichler', n=5, replace_at=True))
-    print('')
-    print('Generate Topics Simon')
-    print(expert_predictor.predict_topics_str('Simon White', n=5, replace_at=True))
-    print('')
+    # Test some example topics
+    n = 5
+    users = ['Amadeus Magrabi', 'Hajo Eichler', 'Konrad Fischer']
+    for user in users:
+        print(f'Generate topics for {user}:')
+        print(expert_predictor.predict_topics_str(user, n=n, replace_at=True))
+        print('')
 
     # Upload trained models to bucket
-    # gsutil -m cp -r models gs://ctp-playground-ml-datasets/hipchat/models
+    # gsutil -m cp -r models gs://ctp-playground-ml-datasets/hipchat
