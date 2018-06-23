@@ -28,6 +28,8 @@ config:
   REDIS_URL: redis://redis.external:6379
   HIPCHAT_ROOMS: '[]'
   HIPCHAT_DEFAULT_ROOM: ''
+  MODEL_SOURCE_BUCKET: 'ctp-playground-ml-datasets'
+  MODEL_SOURCE_BUCKET_DIR: 'hipchat/models'
 
 secrets:
   SECRET_KEY: ''

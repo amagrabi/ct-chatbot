@@ -2,11 +2,7 @@
 
 ## create the docker container
 
-Right now the models are baked into the Docker image...
-
 ```
-gsutil -m rsync -r gs://ctp-playground-ml-datasets/hipchat/models models
-
 docker build -t gcr.io/commercetools-platform/expert-bot:$(git rev-parse HEAD) -t gcr.io/commercetools-platform/expert-bot:latest .
 ```
 

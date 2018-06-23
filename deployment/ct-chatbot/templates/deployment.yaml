@@ -42,7 +42,19 @@ spec:
       containers:
       - name: {{ template "name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        securityContext:
+          privileged: true
+          capabilities:
+            add:
+              - SYS_ADMIN
         imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: MODEL_SOURCE_TYPE
+          value: "bucket"
+        - name: MODEL_SOURCE_BUCKET
+          value: "{{ .Values.config.MODEL_SOURCE_BUCKET }}"
+        - name: MODEL_SOURCE_BUCKET_DIR
+          value: "{{ .Values.config.MODEL_SOURCE_BUCKET_DIR }}"
         volumeMounts:
         - mountPath: /app/config.py
           name: config
