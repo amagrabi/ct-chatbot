@@ -183,7 +183,7 @@ def run_discriminator(q, a):
     count = 0
  
     for i, sent in enumerate(a):
-        l = np.where(sent==3)  #  the position od the symbol EOS
+        l = np.where(sent == 3)  #  the position of the symbol EOS
         limit = l[0][0]
         count += limit + 1
 
