@@ -2,3 +2,5 @@ config:
   REDIS_URL: redis://ct-chatbot-redis-master:6379
   HIPCHAT_ROOMS: '["Genius Bot"]'
   HIPCHAT_DEFAULT_ROOM: 'Genius Bot'
+  MODEL_SOURCE_BUCKET: 'ctp-playground-ml-datasets'
+  MODEL_SOURCE_BUCKET_DIR: 'hipchat/models'

@@ -3,7 +3,7 @@ apiVersion: v1
 image:
   repository: gcr.io/commercetools-platform/expert-bot
   tag: latest
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#rolling-update-deployment
 rollingUpdateStrategy:
@@ -28,6 +28,8 @@ config:
   REDIS_URL: redis://redis.external:6379
   HIPCHAT_ROOMS: '[]'
   HIPCHAT_DEFAULT_ROOM: ''
+  MODEL_SOURCE_BUCKET: 'ctp-playground-ml-datasets'
+  MODEL_SOURCE_BUCKET_DIR: 'hipchat/models'
 
 secrets:
   SECRET_KEY: ''

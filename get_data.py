@@ -56,7 +56,7 @@ def get_data(filepath_pkl=filepath_pkl, max_msgs_per_user=None, undersampling_me
                'Abimbola Idowu', 'Jan Juna', 'Jennifer Wong', 'Antje Lingstädt', 'Lam Tran', 'Daniel Martínez',
                'Selwyn Versteeg', 'Semen Shendyapin', 'Yaron Lambers', 'Houssein Ben Amor', 'Dali Zheng',
                'Daniel Martinez', 'Andrii Kovalenko', 'Stela Leon', 'Szilvia Szegedi', 'Andrew Kamel',
-               'Florian Dietrich']
+               'Florian Dietrich', 'Nima Goodarzi', 'Josh Bones', 'Vicki Kormesch', 'Adrian Makohon']
     df = df[~df['from.name'].isin(expired)]
 
     # Drop messages by user ids (more consistent than names)
@@ -94,6 +94,12 @@ def get_data(filepath_pkl=filepath_pkl, max_msgs_per_user=None, undersampling_me
             else:
                 raise Exception(f'Undersampling method "{undersampling_method}" is undefined.')
         df = df_balanced
+        # Add unfair bias
+        gods = ['Sven Müller']
+        for god in gods:
+            df_add = df[df['from.name']==god].sort_values(by='date').iloc[-int(np.round(max_msgs_per_user*0.6)):].copy()
+            df = df[~(df['from.name']==god)]
+            df = df.append(df_add)
 
     if boost_users_in_range:
         counts = pd.DataFrame(df['from.name'].value_counts())
