@@ -8,12 +8,10 @@ Use: Create an instance of the class and try out a text or a text and the preced
 from keras_bot.KerasBot import KerasBot
 bot = KerasBot()
 bot.answer_to_text('is it going to rain?')
-bot.answer_to_text('is it going to rain?', 'The sky is cloudy.')
-
-bot.answer_to_text('Where are you from?', 'Nice to meet you')
-bot.answer_to_text('Where are you from?', 'Nice to meet you')
+bot.answer_to_text('Where are you from?')
 """
 from keras.layers import Input, Embedding, LSTM, Dense, RepeatVector, Dropout, merge
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer #
 from keras.optimizers import Adam
 from keras.models import Model
 from keras.layers import Activation, Dense
@@ -24,7 +22,7 @@ import os.path
 import nltk
 
 # Extra needed:
-nltk.download('punkt')
+# nltk.download('punkt')
 np.random.seed(1234)  # for reproducibility
 
 
@@ -43,22 +41,24 @@ class KerasBot:
         self._weights_file_GAN = './keras_bot/my_model_weights.h5'
         self._weights_file_discrim = './keras_bot/my_model_weights_discriminator.h5'
         self._unknown_token = 'something'
-        self._name_of_computer = 'john'
+        self._name_of_computer = 'G'
 
         self.model = self.start_model()
         self.vocabulary = cPickle.load(open(self._vocabulary_file, 'rb'))
         self.model_discr = self.init_model()
 
+        # Replace nltk with TfidfVectorizer tokenizer
+        self.tokenizer = TfidfVectorizer().build_analyzer()
 
-        # # Find indexes of BOS and EOS
-        # self.index_EOS = [self.vocabulary.index(item) for item in self.vocabulary if item[0] == 'EOS'][0]
-        # self.index_BOS = [self.vocabulary.index(item) for item in self.vocabulary if item[0] == 'BOS'][0]
+        # Find indexes of BOS and EOS
+        self.index_EOS = [self.vocabulary.index(item) for item in self.vocabulary if item[0] == 'EOS'][0]
+        self.index_BOS = [self.vocabulary.index(item) for item in self.vocabulary if item[0] == 'BOS'][0]
+        print(f'EOS: {self.index_EOS }')
+        print(f'BOS: {self.index_BOS }')
 
     def start_model(self):
 
         print('Starting the model...')
-
-        # *******************************************************************
         # Keras model of the chatbot:
         # *******************************************************************
         ad = Adam(lr=self._learning_rate)
@@ -84,8 +84,8 @@ class KerasBot:
         # 'concatenate the embeddings of the context and the answer up to current token'
 
         out = Dense(int(self._dictionary_size / 2), activation="relu")(merge_layer)  # 'relu activation'
-        out = Dense(self._dictionary_size, activation="softmax")(
-            out)  # 'likelihood of the current token using softmax activation'
+        out = Dense(self._dictionary_size, activation="softmax")(out)  # 'likelihood of the current
+        # token using softmax activation'
 
         model = Model(inputs=[input_context, input_answer], outputs=[out])
 
@@ -93,13 +93,11 @@ class KerasBot:
 
         return model
 
-
-    #TODO change indexes with variables (for own dictionary)
     def greedy_decoder(self, input):
         flag = 0
         prob = 1
         ans_partial = np.zeros((1, self._maxlen_input))
-        ans_partial[0, -1] = 2  # the index of the symbol BOS (begin of sentence)
+        ans_partial[0, -1] = self.index_BOS  # the index of the symbol BOS (Begin Of Sentence)
         for k in range(self._maxlen_input - 1):
             ye = self.model.predict([input, ans_partial]) #
             yel = ye[0, :]
@@ -107,7 +105,7 @@ class KerasBot:
             mp = np.argmax(ye)
             ans_partial[0, 0:-1] = ans_partial[0, 1:]
             ans_partial[0, -1] = mp
-            if mp == 3:  # the index of the symbol EOS (end of sentence)
+            if mp == self.index_EOS:  # the index of the symbol EOS (End Of Sequence)
                 flag = 1
             if flag == 0:
                 prob = prob * p
@@ -117,26 +115,19 @@ class KerasBot:
             if k < (self._dictionary_size - 2):
                 w = self.vocabulary[k]
                 text = text + w[0] + ' '
-        return (text, prob)
+        return text, prob
 
+    def preprocess(self, raw_word):
 
-    def preprocess(self, raw_word, name):
+        # Replace l1 words with l2 accordingly
         l1 = ['won’t', 'won\'t', 'wouldn’t', 'wouldn\'t', '’m', '’re', '’ve', '’ll', '’s', '’d', 'n’t', '\'m', '\'re',
               '\'ve', '\'ll', '\'s', '\'d', 'can\'t', 'n\'t', 'B: ', 'A: ', ',', ';', '.', '?', '!', ':', '. ?', ',   .',
               '. ,', 'EOS', 'BOS', 'eos', 'bos']
         l2 = ['will not', 'will not', 'would not', 'would not', ' am', ' are', ' have', ' will', ' is', ' had', ' not',
               ' am', ' are', ' have', ' will', ' is', ' had', 'can not', ' not', '', '', ' ,', ' ;', ' .', ' ?', ' !', ' :',
               '? ', '.', ',', '', '', '', '']
+        # To replace following symbols withb ' '
         l3 = ['-', '_', ' *', ' /', '* ', '/ ', '\"', ' \\"', '\\ ', '--', '...', '. . .']
-        l4 = ['jeffrey', 'fred', 'benjamin', 'paula', 'walter', 'rachel', 'andy', 'helen', 'harrington', 'kathy', 'ronnie',
-              'carl', 'annie', 'cole', 'ike', 'milo', 'cole', 'rick', 'johnny', 'loretta', 'cornelius', 'claire', 'romeo',
-              'casey', 'johnson', 'rudy', 'stanzi', 'cosgrove', 'wolfi', 'kevin', 'paulie', 'cindy', 'paulie', 'enzo',
-              'mikey', 'i\97', 'davis', 'jeffrey', 'norman', 'johnson', 'dolores', 'tom', 'brian', 'bruce', 'john',
-              'laurie', 'stella', 'dignan', 'elaine', 'jack', 'christ', 'george', 'frank', 'mary', 'amon', 'david', 'tom',
-              'joe', 'paul', 'sam', 'charlie', 'bob', 'marry', 'walter', 'james', 'jimmy', 'michael', 'rose', 'jim',
-              'peter', 'nick', 'eddie', 'johnny', 'jake', 'ted', 'mike', 'billy', 'louis', 'ed', 'jerry', 'alex', 'charles',
-              'tommy', 'bobby', 'betty', 'sid', 'dave', 'jeffrey', 'jeff', 'marty', 'richard', 'otis', 'gale', 'fred',
-              'bill', 'jones', 'smith', 'mickey']
 
         raw_word = raw_word.lower()
         raw_word = raw_word.replace(', ' + self._name_of_computer, '')
@@ -148,12 +139,6 @@ class KerasBot:
 
         for term in l3:
             raw_word = raw_word.replace(term, ' ')
-
-        for term in l4:
-            raw_word = raw_word.replace(', ' + term, ', ' + name)
-            raw_word = raw_word.replace(' ' + term + ' ,', ' ' + name + ' ,')
-            raw_word = raw_word.replace('i am ' + term, 'i am ' + self._name_of_computer)
-            raw_word = raw_word.replace('my name is' + term, 'my name is ' + self._name_of_computer)
 
         for j in range(30):
             raw_word = raw_word.replace('. .', '')
@@ -167,7 +152,8 @@ class KerasBot:
                 and raw_word[-2:] != '? ' and raw_word[-2:] != '. ':
             raw_word = raw_word + ' .'
 
-        if raw_word == ' !' or raw_word == ' ?' or raw_word == ' .' or raw_word == ' ! ' or raw_word == ' ? ' or raw_word == ' . ':
+        if raw_word == ' !' or raw_word == ' ?' or raw_word == ' .' or raw_word == ' ! ' or \
+                raw_word == ' ? ' or raw_word == ' . ':
             raw_word = 'what ?'
 
         if raw_word == '  .' or raw_word == ' .' or raw_word == '  . ':
@@ -179,6 +165,9 @@ class KerasBot:
         # Tokenizing the sentences into words:
         # tokenized_sentences = nltk.word_tokenize(sentences.decode('utf-8'))
         tokenized_sentences = nltk.word_tokenize(sentences)  # changed for error...
+
+        # Replace nltk with TfidfVectorizer tokenizer -not working the same...
+        # tokenized_sentences = self.tokenizer(sentences)
 
         index_to_word = [x[0] for x in self.vocabulary]
         word_to_index = dict([(w, i) for i, w in enumerate(index_to_word)])
@@ -231,12 +220,10 @@ class KerasBot:
 
         return model_discrim
 
-    # TODO variables for EOS and BOS index
     def run_discriminator(self, q, a):
         sa = (a != 0).sum()
 
-        # *************************************************************************
-        # running discriminator:
+        # Running discriminator:
         # *************************************************************************
 
         p = 1
@@ -245,7 +232,7 @@ class KerasBot:
         count = 0
 
         for i, sent in enumerate(a):
-            l = np.where(sent == 3)  # the position od the symbol EOS #todo was 3, made 1
+            l = np.where(sent == self.index_EOS)  # the position od the symbol EOS #todo was 3, made 1
             limit = l[0][0]
             count += limit + 1
 
@@ -259,7 +246,7 @@ class KerasBot:
             ans_partial = np.zeros((1, self._maxlen_input))
 
             # Loop over the positions of the current target output (the current output sequence):
-            l = np.where(sent == 3)  # the position of the symbol EOS
+            l = np.where(sent == self.index_EOS)  # the position of the symbol EOS
             limit = l[0][0]
 
             for k in range(1, limit + 1):
@@ -282,36 +269,33 @@ class KerasBot:
 
         return P
 
-
-    def answer_to_text(self, que, last_query=None):
+    def answer_to_text(self, query):
         """Method to predict reply with the context of the previous query.
         If you add the previous query in last_query it is used for context."""
 
-        name = '' # not sure what to do with this
-
-        if last_query is None:
-            last_query = ''
-        else:
-            last_query = self.preprocess(last_query, name) + ' EOS'
-
-        que = self.preprocess(que, name)
-
-        query = last_query + ' ' + que
+        query = self.preprocess(query)
+        print(f'preprocessed query: {query}')
         Q = self.tokenize(query)
+        print(f'Tokenized query:')
+        print(Q)
 
         # Using the trained model to predict the answer:
         self.model.load_weights(self._weights_file)
         predout, prob = self.greedy_decoder(Q[0:1])
         start_index = predout.find('EOS')
-        text = self.preprocess(predout[0:start_index], name) + ' EOS'
+        text = self.preprocess(predout[0:start_index]) + ' EOS'
+        print(f'preprocessed predicted text: {text}')
 
         self.model.load_weights(self._weights_file_GAN)
         predout, prob2 = self.greedy_decoder(Q[0:1])
         start_index = predout.find('EOS')
-        text2 = self.preprocess(predout[0:start_index], name) + ' EOS'
+        text2 = self.preprocess(predout[0:start_index]) + ' EOS'
+        print(f'preprocessed predicted text2: {text2}')
 
         p1 = self.run_discriminator(Q, self.tokenize(text))
         p2 = self.run_discriminator(Q, self.tokenize(text2))
+        print(f'p1 from run_discriminator: {p1}')
+        print(f'p2 from run_discriminator: {p2}')
 
         if max([prob, prob2]) > .9:
             if prob > prob2:
@@ -323,7 +307,7 @@ class KerasBot:
                 best = text[0:-4]
             else:
                 best = text2[0:-4]
-        init = ''
+        # the [0:-4] removes the ' EOS'
 
         return best
 

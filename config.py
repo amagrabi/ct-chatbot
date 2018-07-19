@@ -83,7 +83,7 @@ from secrets import SECRET_KEY
 # Platforms and mediums messages can come in and go out on.
 IO_BACKENDS = [
     #"will.backends.io_adapters.slack",
-    "will.backends.io_adapters.hipchat",
+    # "will.backends.io_adapters.hipchat",
     # "will.backends.io_adapters.rocketchat",
     "will.backends.io_adapters.shell",
 ]
