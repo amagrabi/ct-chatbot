@@ -5,8 +5,17 @@ Class for replies using the existing bot.
 
 Use: Create an instance of the class and try out a text or a text and the preceding text
 
+# to use existing model
+
+from keras_bot.KerasBot import KerasBot
+from keras.models import load_model
+existing_model = load_model('models/saved_funtalk_model.h5')
+bot = KerasBot(model=existing_model)
+
+# or?
 from keras_bot.KerasBot import KerasBot
 bot = KerasBot()
+
 bot.answer_to_text('is it going to rain?')
 bot.answer_to_text('Where are you from?')
 """
@@ -28,13 +37,14 @@ np.random.seed(1234)  # for reproducibility
 
 class KerasBot:
 
-    def __init__(self):
+    def __init__(self, model=None):
 
         self._word_embedding_size = 100
         self._sentence_embedding_size = 300
         self._dictionary_size = 7000
         self._maxlen_input = 50
         self._learning_rate = 0.000001
+        self.model = model
 
         self._vocabulary_file = './keras_bot/vocabulary_movie'
         self._weights_file = './keras_bot/my_model_weights20.h5'
@@ -43,7 +53,8 @@ class KerasBot:
         self._unknown_token = 'something'
         self._name_of_computer = 'G'
 
-        self.model = self.start_model()
+        if self.model is None:
+            self.model = self.start_model()
         self.vocabulary = cPickle.load(open(self._vocabulary_file, 'rb'))
         self.model_discr = self.init_model()
 

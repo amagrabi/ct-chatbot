@@ -36,8 +36,10 @@ expert_predictor = ExpertPredictor(data=data_dummy,
 
 
 # Load keras bot
+from keras.models import load_model
 from keras_bot.KerasBot import KerasBot
-bot = KerasBot()
+funtalk_model = load_model('models/saved_funtalk_model.h5')
+bot = KerasBot(model=funtalk_model)
 
 class CTBotPlugin(WillPlugin):
 
@@ -132,7 +134,10 @@ Available commands:
             answer = 'If I need to make a choice for you, then there have to be multiple options!'
         self.reply(answer, color='gray')
 
-    @respond_to(r'^(funtalk) (?P<query>.*)')
-    def keras_bot_talk(self, query):
-        answer = bot.answer_to_text('is it going to rain?')
-        self.reply(answer, color='gray')
+    @respond_to(r'^(funtalk) (?P<message>.*)')
+    def keras_bot_talk(self, message):
+        print(message)
+        self.reply(message, color='gray')
+        # answer = bot.answer_to_text(message)
+        # print(answer)
+        # self.reply(answer, color='gray')
