@@ -1,0 +1,4 @@
+model_checkpoint_path: "/Users/evi/code/ct-chatbot/test/data\\two-layer-lstm-medium-config-60-epoch-0p93-lr-decay-10-max-lr-final"
+all_model_checkpoint_paths: "/Users/evi/code/ct-chatbot/test/data\\two-layer-lstm-medium-config-60-epoch-0p93-lr-decay-10-max-lr-0"
+all_model_checkpoint_paths: "/Users/evi/code/ct-chatbot/test/data\\two-layer-lstm-medium-config-60-epoch-0p93-lr-decay-10-max-lr-1"
+all_model_checkpoint_paths: "/Users/evi/code/ct-chatbot/test/data\\two-layer-lstm-medium-config-60-epoch-0p93-lr-decay-10-max-lr-final"

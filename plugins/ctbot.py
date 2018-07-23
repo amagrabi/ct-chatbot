@@ -35,11 +35,19 @@ expert_predictor = ExpertPredictor(data=data_dummy,
                                    userid2name=userid2name)
 
 
-# Load keras bot
+# Load data for keras bot
 from keras.models import load_model
 from keras_bot.KerasBot import KerasBot
-funtalk_model = load_model('models/saved_funtalk_model.h5')
-bot = KerasBot(model=funtalk_model)
+
+#funtalk_model = load_model('models/saved_funtalk_model.h5')
+#bot = KerasBot(model=funtalk_model)
+#print(bot.answer_to_text('is it going to rain?'))
+
+import codecs
+with codecs.open('data/moviequotes.memorable_quotes.txt', "r",encoding='utf-8', errors='ignore') as f:
+    movielines = f.readlines()
+    f.close()
+
 
 class CTBotPlugin(WillPlugin):
 
@@ -134,10 +142,17 @@ Available commands:
             answer = 'If I need to make a choice for you, then there have to be multiple options!'
         self.reply(answer, color='gray')
 
-    @respond_to(r'^(funtalk) (?P<message>.*)')
+    # @respond_to(r'^(funtalk) (?P<message>.*)')
+    # def keras_bot_talk(self, message):
+    #     print(message)
+    #     self.reply(message, color='gray')
+    #     # answer = bot.answer_to_text(message)
+    #     # print(answer)
+    #     # self.reply(answer, color='gray')
+
+    @respond_to(r'^(movie)$')
     def keras_bot_talk(self, message):
-        print(message)
+        line_index = random.choice(range(2, len(movielines), 4))
+        movie_index = line_index - 1
+        message = movielines[line_index] + ' (' + movielines[movie_index].title() + ')'
         self.reply(message, color='gray')
-        # answer = bot.answer_to_text(message)
-        # print(answer)
-        # self.reply(answer, color='gray')

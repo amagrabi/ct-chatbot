@@ -156,7 +156,7 @@ def get_train_data():
     # I think the correct is this: ###!!!! yes or no....
     # Getting the most common words and build index_to_word and word_to_index vectors:
     vocab = word_freq.most_common(vocabulary_size-1)
-    # Saving vocabulary:
+    # Saving vocabulary_length:
     with open(vocabulary_file, 'wb') as v:
         pickle.dump(vocab, v)
 
@@ -167,10 +167,10 @@ def get_train_data():
     index_to_word.append(unknown_token)
     word_to_index = dict([(w, i) for i, w in enumerate(index_to_word)])
 
-    print("Using vocabulary of size %d." % vocabulary_size)
-    print("The least frequent word in our vocabulary is '%s' and appeared %d times." % (vocab[-1][0], vocab[-1][1]))
+    print("Using vocabulary_length of size %d." % vocabulary_size)
+    print("The least frequent word in our vocabulary_length is '%s' and appeared %d times." % (vocab[-1][0], vocab[-1][1]))
 
-    # Replacing all words not in our vocabulary with the unknown token:
+    # Replacing all words not in our vocabulary_length with the unknown token:
     for i, sent in enumerate(tokenized_answers):
         tokenized_answers[i] = [w if w in word_to_index else unknown_token for w in sent]
 
@@ -232,7 +232,7 @@ def train_bot():
         return (text)
 
     # **********************************************************************
-    # Reading a pre-trained word embedding and addapting to our vocabulary:
+    # Reading a pre-trained word embedding and addapting to our vocabulary_length:
     # **********************************************************************
 
     embeddings_index = {}
@@ -247,7 +247,7 @@ def train_bot():
     print('Found %s word vectors.' % len(embeddings_index))
     embedding_matrix = np.zeros((dictionary_size, word_embedding_size))
 
-    # Loading our vocabulary:
+    # Loading our vocabulary_length:
     vocabulary = cPickle.load(open(vocabulary_file, 'rb'))
 
     # Find indexes of BOS and EOS
